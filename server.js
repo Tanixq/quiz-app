@@ -19,6 +19,7 @@ mongoose.connect(config.MONGO_URL, { useNewUrlParser: true,  useUnifiedTopology:
 })
 
 //setting templating engine to ejs
+app.use(express.static('public'))
 app.set("view engine", 'ejs')
 app.use(expressEjsLayouts)
 
