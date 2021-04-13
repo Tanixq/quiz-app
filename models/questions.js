@@ -3,6 +3,10 @@ const { Schema } = mongoose
 
 const questionSchema = new Schema({
     text: {type: String, required: true, unique: true},
+    explanation: {
+        type: String,
+        required: true
+    },
     options: [
         {
             text: {
@@ -17,7 +21,7 @@ const questionSchema = new Schema({
     ],
     date: {
         type: Date,
-        default: Date.now()
+        default: new Date()
     }
 })
 

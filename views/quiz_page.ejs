@@ -1,68 +1,118 @@
-<div class="container mt-4 rounded-3 p-4 d-flex" style="background-color: #E9896A; flex-direction: column;">
-    <div class="p-4" style="color: #343F56;">
-        <p>Q. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Optio est, magni perspiciatis possimus fuga
-            itaque
-            quasi amet, ducimus maiores sapiente facilis! Neque rerum hic mollitia inventore aliquid. Excepturi, aliquid
-            amet?</p>
+<div id="quizDiv" class="container mt-4 rounded-3 p-4 d-flex bg-main flex-column">
+
+    <div class="p-4 text-color-dark">
+        <p>Q. <%= questions[queNo].text %> </p>
     </div>
 
-    <div class="container d-flex pb-4">
+    <div class="container quiz-box pb-4">
 
-        <div class="container" style="display: flex; flex-direction: column;">
+        <div class="container d-flex flex-column">
 
             <div class="container">
-                <div class="p-2 rounded-3 mt-2" style="background-color: #F8F5F1; opacity: 0.9;">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                    <label class="form-check-label" for="flexRadioDefault1">
-                        lorem ipsum
-                    </label>
-                </div>
-                </div>
-                <div class="p-2 rounded-3 mt-2" style="background-color: #F8F5F1; opacity: 0.9;">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                    <label class="form-check-label" for="flexRadioDefault1">
-                        lorem ipsum
-                    </label>
-                </div>
-                </div>
-                <div class="p-2 rounded-3 mt-2" style="background-color: #F8F5F1; opacity: 0.9;">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                    <label class="form-check-label" for="flexRadioDefault1">
-                        lorem ipsum
-                    </label>
-                </div>
-                </div>
-                <div class="p-2 rounded-3 mt-2" style="background-color: #F8F5F1; opacity: 0.9;">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                    <label class="form-check-label" for="flexRadioDefault1">
-                        lorem ipsum
-                    </label>
-                </div>
-                </div>
+                <p id="warning" class="d-none bg-white rounded-3 p-1"></p>
+                <% questions[queNo].options.forEach(option => { %>
+                    <div class="p-2 rounded-3 mt-2 bg-white">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="radioDefault" id="<%=option.id%>" data-isCorrect="<%=option.isCorrect%>">
+                            <label class="form-check-label" for="<%=option.id%>">
+                               <%= option.text  %>
+                            </label>
+                        </div>
+                    </div>
+                <% }) %>
             </div>
 
-            <div class="ms-2" style="margin-top: 1.5rem;">
-                <button class="btn btn-light rounded-2" style="background-color: #F8F5F1; border: none; opacity: 0.9;">Submit</button>
-                <button class="btn btn-light ms-3 rounded-2"
-                    style="background-color: #F8F5F1; border: none; opacity: 0.9;">Next</button>
+            <div class="ms-2 mt-std">
+                <button id="submitBtn" class="btn btn-light rounded-2 btn-white shadow-none">Submit</button>
+                <button id="nextBtn" class="btn btn-light ms-3 rounded-2 btn-white shadow-none invisible">Next</button>
             </div>
 
         </div>
 
-        <div class="container rounded-3" style="background-color:#F8F5F1; opacity: 0.9;">
-            <div class="container p-3">
-                <h5 style="text-align: center;">Explanation</h5>
-                <p style="margin-top: 1.5rem;">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo earum perspiciatis dicta, ab maiores
-                    et, quos voluptatem iusto laborum eaque quas, nam deserunt pariatur dolore perferendis sit ducimus
-                    ad facilis.
-                </p>
+            <div id="explanationBox" class="container rounded-3 bg-white invisible explanation-box" >
+                <div class="container p-3">
+                    <h5 class="text-center">Explanation</h5>
+                    <p class="mt-std">
+                        <%= questions[queNo].explanation %> 
+                    </p>
+                </div>
             </div>
-        </div>
     </div>
-
 </div>
+
+<script>
+    let queNo = "<%-queNo%>"
+    document.getElementById("submitBtn").onclick = (event, queNo) => {
+        let options = document.getElementsByName("radioDefault")
+        let correctOpt = 0
+        let choosedOpt = 0
+        options.forEach(option => {
+            if(option.checked == true){
+                choosedOpt = option.id
+            }
+            if (option.dataset.iscorrect == 'true') {
+                correctOpt = option.id
+            }
+        })
+        if (!choosedOpt) {
+            // Warning to choose correct option
+            document.getElementById("warning").innerHTML = "Choose Correct Option !"
+            document.getElementById("warning").classList.add("text-danger")
+            document.getElementById("warning").classList.remove("d-none")
+        }else{
+            document.getElementById("warning").classList.add("d-none")
+            if (correctOpt == choosedOpt) {
+                // Disabling submit button
+                document.getElementById("submitBtn").classList.add("disabled")
+
+                // Manuplating to show correct ans on warning box
+                document.getElementById("warning").innerHTML = "Correct Answer !"
+                document.getElementById("warning").classList.add("text-success")
+                document.getElementById("warning").classList.remove("d-none")
+
+                // changing correct option div to success color
+                document.getElementById(correctOpt).parentElement.parentElement.classList.remove("bg-white")
+                document.getElementById(correctOpt).parentElement.parentElement.classList.add("bg-success", "text-light")
+                
+                // Showing explanation box and next btn
+                document.getElementById("explanationBox").classList.remove("invisible")
+                document.getElementById("nextBtn").classList.remove("invisible")
+
+            }else{
+                // Disabling submit button
+                document.getElementById("submitBtn").classList.add("disabled")
+
+                // Manuplating to show wrong ans on warning box
+                document.getElementById("warning").innerHTML = "Wrong Answer !"
+                document.getElementById("warning").classList.add("text-danger")
+                document.getElementById("warning").classList.remove("d-none")
+
+                // changing correct option div to success color
+                document.getElementById(correctOpt).parentElement.parentElement.classList.remove("bg-white")
+                document.getElementById(correctOpt).parentElement.parentElement.classList.add("bg-success", "text-light")
+
+                // changing wrong option div to danger color
+                document.getElementById(choosedOpt).parentElement.parentElement.classList.remove("bg-white")
+                document.getElementById(choosedOpt).parentElement.parentElement.classList.add("bg-danger", "text-light")
+
+                // Showing explanation box and next btn
+                document.getElementById("explanationBox").classList.remove("invisible")
+                document.getElementById("nextBtn").classList.remove("invisible")
+            }
+        }
+    }
+
+    document.getElementById("nextBtn").onclick = () => {
+        if (parseInt(queNo) === "<%-questions.length%>" - 1) {
+            queNo = 0
+            let siteUrl = window.location.origin
+            let date = "<%=moment().format('YYYY-MM-DD')%>"
+            window.location.replace(siteUrl + "/quiz/" + date + "/" + queNo )
+        }else{
+            queNo = parseInt(queNo)+ 1
+            let siteUrl = window.location.origin
+            let date = "<%=moment().format('YYYY-MM-DD')%>"
+            window.location.replace(siteUrl + "/quiz/" + date + "/" + queNo )
+        }
+    }
+</script>
